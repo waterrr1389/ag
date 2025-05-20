@@ -1,3 +1,6 @@
 .venv/
-!ag.py
+env/
+venv/
 *.py
+!ag.py
+!readme.md
