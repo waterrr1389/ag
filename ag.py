@@ -6,6 +6,8 @@ import os
 import sys
 import subprocess
 import json
+import httpx # 导入 httpx 以便自定义客户端
+
 from openai import AsyncOpenAI, APIError, APITimeoutError, APIConnectionError
 
 # 引入 prompt_toolkit 的异步 Session 和样式化文本
@@ -16,11 +18,18 @@ from prompt_toolkit.formatted_text import FormattedText # 用于样式化提示
 
 # --- 配置 ---
 try:
+
+    # 创建一个自定义的 httpx.AsyncClient 实例
+    # trust_env=False 让 httpx 客户端忽略环境变量中的代理设置 (如 HTTP_PROXY, HTTPS_PROXY)
+    custom_httpx_client = httpx.AsyncClient(trust_env=False)
+
     # 初始化 AsyncOpenAI 客户端
     # 它会自动从环境变量 OPENAI_API_KEY 读取密钥
+
     client = AsyncOpenAI(
         base_url="https://api.siliconflow.cn/v1",
         timeout=120.0, # 设置请求超时时间
+        http_client=custom_httpx_client # 使用我们自定义的、忽略系统代理的客户端
     )
 except Exception as e:
     print(f"AsyncOpenAI 初始化错误: {e}")
